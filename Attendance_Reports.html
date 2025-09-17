@@ -708,7 +708,7 @@
             $headerRow.append(
               $('<th>').text(formatDateDayMonth(new Date(current)))
             );
-            current.setDate(current.getDate() + 1);
+            current.setDate(current.getDate() );
           }
 
           $table.append($('<thead>').append($headerRow));
