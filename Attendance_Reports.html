@@ -629,26 +629,27 @@
           let startDate, endDate;
 
           switch (selectedPeriod) {
-            case '1-15':
-              startDate = new Date(year, month, 1);
-              endDate = new Date(year, month, 15);
-              break;
-            case '16-end':
-              startDate = new Date(year, month, 16);
-              endDate = new Date(year, month + 1, 0);
-              break;
-            case 'full-month':
-              startDate = new Date(year, month, 1);
-              endDate = new Date(year, month + 1, 0);
-              break;
-            case 'weekly':
-            default:
-              const todayDay = today.getDay(); // 0 = Sunday
-              startDate = new Date(today);
-              startDate.setDate(today.getDate() - todayDay);
-              endDate = new Date(today);
-              break;
-          }
+  case '1-15':
+    startDate = new Date(Date.UTC(year, month, 1));
+    endDate = new Date(Date.UTC(year, month, 15));
+    break;
+  case '16-end':
+    startDate = new Date(Date.UTC(year, month, 16));
+    endDate = new Date(Date.UTC(year, month + 1, 0));
+    break;
+  case 'full-month':
+    startDate = new Date(Date.UTC(year, month, 1));
+    endDate = new Date(Date.UTC(year, month + 1, 0));
+    break;
+  case 'weekly':
+  default:
+    const todayDay = today.getDay(); // 0 = Sunday
+    startDate = new Date(today);
+    startDate.setDate(today.getDate() - todayDay);
+    endDate = new Date(today);
+    break;
+}
+
 
           return { startDate, endDate };
         }
@@ -863,3 +864,4 @@
     </script>
   </body>
 </html>
+
