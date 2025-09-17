@@ -456,7 +456,7 @@
           <select id="periodSelector">
             <option value="weekly">Weekly (Sun-Today)</option>
             <option value="1-15">1-15 of Month</option>
-            <option value="16-end">116-end of Month</option>
+            <option value="16-end">16-end of Month</option>
             <option value="full-month">Full Month</option>
           </select>
         </div>
@@ -622,34 +622,39 @@
 
         // Function to get date range based on selected period
         function getDateRange() {
-          const today = currentEndDate;
+          const today = new Date(currentEndDate); // Create a copy to avoid modifying the original
           const year = today.getFullYear();
           const month = today.getMonth();
 
           let startDate, endDate;
 
           switch (selectedPeriod) {
-  case '1-15':
-    startDate = new Date(Date.UTC(year, month, 1));
-    endDate = new Date(Date.UTC(year, month, 15));
-    break;
-  case '16-end':
-    startDate = new Date(Date.UTC(year, month, 16));
-    endDate = new Date(Date.UTC(year, month + 1, 0));
-    break;
-  case 'full-month':
-    startDate = new Date(Date.UTC(year, month, 1));
-    endDate = new Date(Date.UTC(year, month + 1, 0));
-    break;
-  case 'weekly':
-  default:
-    const todayDay = today.getDay(); // 0 = Sunday
-    startDate = new Date(today);
-    startDate.setDate(today.getDate() - todayDay);
-    endDate = new Date(today);
-    break;
-}
+            case '1-15':
+              startDate = new Date(year, month, 1);
+              endDate = new Date(year, month, 15);
+              break;
+            case '16-end':
+              startDate = new Date(year, month, 16);
+              endDate = new Date(year, month + 1, 0); // Last day of month
+              break;
+            case 'full-month':
+              startDate = new Date(year, month, 1);
+              endDate = new Date(year, month + 1, 0); // Last day of month
+              break;
+            case 'weekly':
+            default:
+              // Fix for weekly calculation (Sunday to Today)
+              const todayDay = today.getDay(); // 0 = Sunday
+              startDate = new Date(today);
+              startDate.setDate(today.getDate() - todayDay);
+              endDate = new Date(today);
+              break;
+          }
 
+          // Ensure start date is before end date
+          if (startDate > endDate) {
+            [startDate, endDate] = [endDate, startDate];
+          }
 
           return { startDate, endDate };
         }
@@ -768,13 +773,11 @@
 
         $('#nextDayBtn').on('click', function () {
           currentEndDate.setDate(currentEndDate.getDate() + 1);
-          $(this).text(formatDate_btn(currentEndDate));
           generateTable();
         });
 
         $('#prevDayBtn').on('click', function () {
           currentEndDate.setDate(currentEndDate.getDate() - 1);
-          $(this).text(formatDate_btn(currentEndDate));
           generateTable();
         });
 
@@ -860,8 +863,10 @@
           // create and download the file
           XLSX.writeFile(workbook, 'employees.xlsx');
         });
+
+        // Generate table on page load
+        generateTable();
       });
     </script>
   </body>
 </html>
-
